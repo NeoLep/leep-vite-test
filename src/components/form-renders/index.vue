@@ -7,14 +7,17 @@
           class="col">
           <el-form-item v-bind="item.formItemsProps || {}" :label="item.label" :prop="item.prop"
             :rules="item.rules || []" class="form-item">
+            <template #label>
+              <slot :name="loaderEvents.labelSlotsList[item.prop]" :data="item"></slot>
+            </template>
             <form-elements-content v-if="item.type !== 'custom'" :renders="item" v-model="formEvents.forms[item.prop]"
               :slotsList="loaderEvents.slotsList[item.prop]" @eventsSubs="selfEvents.getEventsSubs">
               <template v-for="slotItem in loaderEvents.slotsList[item.prop]" #[slotItem]="scoped">
                 <slot :name="slotItem" :pop="{...scoped.pop}"></slot>
               </template>
             </form-elements-content>
-            <div v-else>
-              <slot :name="item.slots"></slot>
+            <div v-else style="width: 100%">
+              <slot :name="item.slots.default || item.slots"></slot>
             </div>
           </el-form-item>
         </el-col>
@@ -55,6 +58,7 @@ const formEvents: any = reactive({
 })
 
 const loaderEvents: any = {
+  labelSlotsList: reactive({}),
   slotsList: reactive({}),
   rendersLoader: () => { // 整个 forms 进行loader[入口]
     formEvents.props = props.renders.props ? JSON.parse(JSON.stringify(props.renders.props)) : {} // 需要向 el-form 组件中插入的 props
@@ -74,6 +78,10 @@ const loaderEvents: any = {
     formEvents.renderList.forEach((renderItem: any) => {
       slotsResult[renderItem.prop] = {}
       if (!renderItem.slots) return
+      if (renderItem.slots.label && slots[renderItem.slots.label]) { // 设置 label 插槽
+        if (!loaderEvents.labelSlotsList) loaderEvents.labelSlotsList = {}
+        loaderEvents.labelSlotsList[renderItem.prop] = renderItem.slots.label
+      }
       if (renderItem.slots.constructor == String) {
         // slotsResult[renderItem.prop]['default'] = renderItem.slots  // 旧逻辑对所有插槽配置进行插入-无论是否使用
         if (slots[renderItem.slots]) slotsResult[renderItem.prop]['default'] = renderItem.slots // 如果存在插槽则进行插入
