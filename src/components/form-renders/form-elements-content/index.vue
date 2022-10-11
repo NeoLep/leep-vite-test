@@ -53,7 +53,8 @@ const subEvents = {
       args: { // 组件传递过来的参数集合
         beforeUpdateValue: refIs.getOldValue(), // 更新前的数据
         afterUpdateValue: props.modelValue, // 更新后的数据
-        args: getArgs // element 本身方法传递的参数
+        args: getArgs, // element 本身方法传递的参数
+        rendersProto: props.renders // render 实例
       }
     }
     emit('eventsSubs', sendProtos)  // 对事件进行发布

@@ -7,7 +7,7 @@
     :placeholder="$attrs.placeholder || '请选择'"
   >
     <el-option v-if="!props.renders.options" v-for="item in []" />
-    <el-option v-else v-for="item in props.renders.options" :key="item.value" :label="item.label" :value="item.value">
+    <el-option v-else v-for="item in props.renders.options" :key="item.value" :disabled="item.disabled" :label="item.label" :value="item.value">
       <template v-for="(slotsItem, index) in props.slotsListTransform.slotPropsList" #[slotsItem]>
         <slot :name="props.slotsListTransform.slotRenamedList[index]" :pop="item"></slot>
       </template>

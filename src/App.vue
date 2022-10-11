@@ -1,279 +1,550 @@
 <template>
-  <!-- <FormRenders v-if="true" passivity :renders="setRenders" :forms="setForms" :ref="e => formEvents.formsRef = e">
-    <template #right>
-      <div style="width: 200px">
-        <el-button type="primary" @click="formEvents.submitForms()">Create</el-button>
-        <el-button>Cancel</el-button>
-      </div>
-    </template>
-    <template #footer>
-      <div>
-        <el-button type="primary" @click="formEvents.submitForms()">Create</el-button>
-        <el-button>Cancel</el-button>
-      </div>
-    </template>
-  </FormRenders> -->
-  source: {{ searchFormsRenders.forms }}
-  <SearchRenders ref="searchRendersRef" :renders="searchFormsRenders.renders" v-model="searchFormsRenders.forms"/>
+  <el-button style="position: absolute; bottom: 20px; left: 20px; z-index: 11100" @click="showInfos">SHOW Infos
+  </el-button>
+  <div class="antv-x6-test">
+    <div class="swaper" id="swaper" :ref="el => refList.swaperRef.value = el"></div>
+    <div class="container" id="container" :ref="el => refList.containerRef.value = el"></div>
+  </div>
 </template>
-
 <script lang="ts" setup>
-import FormRenders from './components/form-renders/index.vue'
-import SearchRenders from './components/search-renders/index.vue'
+import { Graph, Shape, Addon } from '@antv/x6';
 
-const searchRendersRef = ref()
 
-const setForms = reactive({})
+const showInfos = () => {
+  // 获取数据
+  // console.log(antsEvents.GraphProto.toJSON())
+  // 插入数据
+  antsEvents.GraphProto.fromJSON({"cells":[{"shape":"edge","attrs":{"line":{"stroke":"#A2B1C3","targetMarker":{"name":"block","width":12,"height":8}}},"id":"08a687f6-5909-4b5c-91d9-5383a46447da","zIndex":0,"source":{"cell":"21b77898-c705-4abd-b4e8-96d00dbfc731","port":"520ba21f-bcd0-4fb0-947f-4a8634ffea90"},"target":{"cell":"d24cb0cb-3a76-4d69-aac5-24d4fe6f5c26","port":"453458dd-27f3-4223-a2bb-a1dfcf12001f"}},{"position":{"x":220,"y":90},"size":{"width":66,"height":36},"attrs":{"text":{"text":"开始"},"body":{"rx":20,"ry":26}},"visible":true,"shape":"custom-rect","ports":{"groups":{"top":{"position":"top","attrs":{"circle":{"r":4,"magnet":true,"stroke":"#5F95FF","strokeWidth":1,"fill":"#fff","style":{"visibility":"hidden"}}}},"right":{"position":"right","attrs":{"circle":{"r":4,"magnet":true,"stroke":"#5F95FF","strokeWidth":1,"fill":"#fff","style":{"visibility":"hidden"}}}},"bottom":{"position":"bottom","attrs":{"circle":{"r":4,"magnet":true,"stroke":"#5F95FF","strokeWidth":1,"fill":"#fff","style":{"visibility":"hidden"}}}},"left":{"position":"left","attrs":{"circle":{"r":4,"magnet":true,"stroke":"#5F95FF","strokeWidth":1,"fill":"#fff","style":{"visibility":"hidden"}}}}},"items":[{"group":"top","id":"0b708047-33c7-42a5-b155-e0c88d6c65e6"},{"group":"right","id":"731649ae-1f23-4490-bdae-59053c789966"},{"group":"bottom","id":"520ba21f-bcd0-4fb0-947f-4a8634ffea90"},{"group":"left","id":"b68654ee-e409-4789-9f30-536e467efeed"}]},"id":"21b77898-c705-4abd-b4e8-96d00dbfc731","zIndex":1},{"position":{"x":280,"y":200},"size":{"width":66,"height":36},"attrs":{"text":{"text":"过程"}},"visible":true,"shape":"custom-rect","ports":{"groups":{"top":{"position":"top","attrs":{"circle":{"r":4,"magnet":true,"stroke":"#5F95FF","strokeWidth":1,"fill":"#fff","style":{"visibility":"hidden"}}}},"right":{"position":"right","attrs":{"circle":{"r":4,"magnet":true,"stroke":"#5F95FF","strokeWidth":1,"fill":"#fff","style":{"visibility":"hidden"}}}},"bottom":{"position":"bottom","attrs":{"circle":{"r":4,"magnet":true,"stroke":"#5F95FF","strokeWidth":1,"fill":"#fff","style":{"visibility":"hidden"}}}},"left":{"position":"left","attrs":{"circle":{"r":4,"magnet":true,"stroke":"#5F95FF","strokeWidth":1,"fill":"#fff","style":{"visibility":"hidden"}}}}},"items":[{"group":"top","id":"453458dd-27f3-4223-a2bb-a1dfcf12001f"},{"group":"right","id":"14929247-1638-446b-b430-fc3359aba76f"},{"group":"bottom","id":"9d9fa141-7176-4ea7-b294-068c47762097"},{"group":"left","id":"dbbb0dee-3d0a-4f39-803d-c63b17770ea0"}]},"id":"d24cb0cb-3a76-4d69-aac5-24d4fe6f5c26","zIndex":2}]});
+  // console.log(antsEvents.GraphProto.model.getNodes()) // 获取画布中所有节点数据
+  // console.log(antsEvents.GraphProto.model.getEdges()) // 获取画布中所有连接线数据
+}
 
-const setRenders = reactive({
-  layout: {
-    gutter: 20,
-    span: 24
-  },
-  props: {
-    size: "large",
-    'scroll-to-error': true
-    // labelWidth: '20px',
-    // labelPosition: 'top',
-    // 'hide-required-asterisk': true
-  },
-  list: [
-  {
-      label: '姓名', prop: 'name', type: 'input',
-      rules: [
-        { required: true, message: 'name is required' },
-      ],
-      slots: { prepend: 'namePrependSlot', append: 'nameAppendSlot' },
-      formItemsProps: {
-        // labelWidth: '120px'
-      },
-      props: {
-        'controls-position': 'right'
-      },
-      events: {
-        change: (infos: any) => {
-          console.log(infos)
-        },
-        input: (infos: any) => {
-          console.log('prop name got input events', infos);
-          // if (!setRenders.list[1]['props']) setRenders.list[1]['props'] = {}
-          // if (infos.afterUpdateValue * 1 > 10) {
-          //   console.log('set disabled state');
-          //   setRenders.list[1]['props']['disabled'] = true
-          // } else {
-          //   setRenders.list[1]['props']['disabled'] = false
-          // }
-        }
-      }
+const refList = {
+  swaperRef: ref(),
+  containerRef: ref()
+}
+const antsEvents = <{
+  GraphProto: any,
+  StencilProto: any,
+  createGraph: Function,
+  createStencil: Function
+}>{
+    GraphProto: null,
+    StencilProto: null,
+    createGraph(options: any) {
+      return new Graph(options);
     },
-    {
-      label: 'cascader', prop: 'sex', type: 'cascader',
-      slots: 'sexSlot',
-      props: {
-        clearable: true,
-      },
-      options: [
-        {
-          value: 'guide',
-          label: 'Guide',
-          children: [
-            {
-              value: 'disciplines',
-              label: 'Disciplines',
-              children: [
-                {
-                  value: 'consistency',
-                  label: 'Consistency',
-                },
-                {
-                  value: 'feedback',
-                  label: 'Feedback',
-                },
-                {
-                  value: 'efficiency',
-                  label: 'Efficiency',
-                },
-                {
-                  value: 'controllability',
-                  label: 'Controllability',
-                },
-              ],
-            },
-            {
-              value: 'navigation',
-              label: 'Navigation',
-              children: [
-                {
-                  value: 'side nav',
-                  label: 'Side Navigation',
-                },
-                {
-                  value: 'top nav',
-                  label: 'Top Navigation',
-                },
-              ],
-            },
-          ],
-        },
-        {
-          value: 'component',
-          label: 'Component',
-          children: [
-            {
-              value: 'basic',
-              label: 'Basic',
-              children: [
-                {
-                  value: 'layout',
-                  label: 'Layout',
-                  disabled: true,
-                },
-                {
-                  value: 'color',
-                  label: 'Color',
-                },
-                {
-                  value: 'typography',
-                  label: 'Typography',
-                },
-                {
-                  value: 'icon',
-                  label: 'Icon',
-                },
-                {
-                  value: 'button',
-                  label: 'Button',
-                },
-              ],
-            },
-          ],
-        },
-        {
-          value: 'resource',
-          label: 'Resource',
-          children: [
-            {
-              value: 'axure',
-              label: 'Axure Components',
-            },
-            {
-              value: 'sketch',
-              label: 'Sketch Templates',
-            },
-            {
-              value: 'docs',
-              label: 'Design Documentation',
-            },
-          ],
-        },
-      ],
-      events: {
-        change: (infos: any) => {
-          console.log(infos)
-        }
-      }
-    },
-    {
-      label: '单选',
-      prop: 'radios',
-      type: 'checkbox',
-      options: [
-        { label: 'male', value: 1 },
-        { label: 'female', value: 0 }
-      ],
-      events: {
-        change: (infos: any) => {
-          console.log(infos)
-        }
-      }
-    },
-    {
-      label: '时间选择',
-      prop: 'dates',
-      type: 'time-select',
-      formItemsProps: {},
-      props: {
-        clearable: false
-      },
-      events: {
-        change: (infos: any) => {
-          console.log('changed', infos)
-        }
-      },
-
-    },
-  ]
-})
-const formEvents = reactive({
-  formsRef: ref(),
-  submitForms() {
-    // .validate()
-    this.formsRef.validate((valid: any) => {
-      if (valid) {
-        console.log('submit!')
-      } else {
-        console.log('error submit!')
-        return false
-      }
-    })
-  }
-})
-
-const searchFormsRenders = reactive({
-  forms: reactive({}),
-  renders: {
-    opertaionPosition: 'right',
-    passivity: true,
-    renders: {
-      layout: {
-        span: 24
-      },
-      list: [
-        {label: '姓名', prop: 'name', type: 'input', events: {
-          change: (val: string) => {
-            console.log(searchRendersRef)
-            if (val === '李鹏') {
-              if(!searchFormsRenders.renders.renders.list[1].props) searchFormsRenders.renders.renders.list[1].props = {}
-              if(!searchFormsRenders.renders.renders.list[2].props) searchFormsRenders.renders.renders.list[2].props = {}
-              // searchRendersRef.value.getFormsRef().setValue('sex', 1)
-              // searchRendersRef.value.getFormsRef().setValue('age', 23)
-              searchFormsRenders.forms['sex'] = 1
-              searchFormsRenders.forms['age'] = 23
-              searchFormsRenders.renders.renders.list[1].props['disabled'] = true
-              searchFormsRenders.renders.renders.list[2].props['disabled'] = true
-
-            } else {
-              if(!searchFormsRenders.renders.renders.list[1].props) searchFormsRenders.renders.renders.list[1].props = {}
-              if(!searchFormsRenders.renders.renders.list[2].props) searchFormsRenders.renders.renders.list[2].props = {}
-              searchFormsRenders.renders.renders.list[1].props['disabled'] = false
-              searchFormsRenders.renders.renders.list[2].props['disabled'] = false
-            }
-          } 
-        }},
-        {label: '年龄', prop: 'age', type: 'input-number', default: 100 },
-        {label: '性别', prop: 'sex', type: 'select', options: [
-          { label: '男', value: 1},
-          { label: '女', value: 0},
-          { label: '不确定', value: 2},
-        ]},
-      ]
+    createStencil(options: any) {
+      return new Addon.Stencil(options)
     }
   }
+
+const graphEvents = {
+  rigistPoints: () => {
+    const ports = {
+      groups: {
+        top: {
+          position: 'top',
+          attrs: {
+            circle: {
+              r: 4,
+              magnet: true,
+              stroke: '#5F95FF',
+              strokeWidth: 1,
+              fill: '#fff',
+              style: {
+                visibility: 'hidden',
+              },
+            },
+          },
+        },
+        right: {
+          position: 'right',
+          attrs: {
+            circle: {
+              r: 4,
+              magnet: true,
+              stroke: '#5F95FF',
+              strokeWidth: 1,
+              fill: '#fff',
+              style: {
+                visibility: 'hidden',
+              },
+            },
+          },
+        },
+        bottom: {
+          position: 'bottom',
+          attrs: {
+            circle: {
+              r: 4,
+              magnet: true,
+              stroke: '#5F95FF',
+              strokeWidth: 1,
+              fill: '#fff',
+              style: {
+                visibility: 'hidden',
+              },
+            },
+          },
+        },
+        left: {
+          position: 'left',
+          attrs: {
+            circle: {
+              r: 4,
+              magnet: true,
+              stroke: '#5F95FF',
+              strokeWidth: 1,
+              fill: '#fff',
+              style: {
+                visibility: 'hidden',
+              },
+            },
+          },
+        },
+      },
+      items: [
+        {
+          group: 'top',
+        },
+        {
+          group: 'right',
+        },
+        {
+          group: 'bottom',
+        },
+        {
+          group: 'left',
+        },
+      ],
+    }
+    Graph.registerNode(
+      'custom-rect',
+      {
+        inherit: 'rect',
+        width: 66,
+        height: 36,
+        attrs: {
+          body: {
+            strokeWidth: 1,
+            stroke: '#5F95FF',
+            fill: '#EFF4FF',
+          },
+          text: {
+            fontSize: 12,
+            fill: '#262626',
+          },
+        },
+        ports: { ...ports },
+      },
+      true,
+    )
+
+    Graph.registerNode(
+      'custom-polygon',
+      {
+        inherit: 'polygon',
+        width: 66,
+        height: 36,
+        attrs: {
+          body: {
+            strokeWidth: 1,
+            stroke: '#5F95FF',
+            fill: '#EFF4FF',
+          },
+          text: {
+            fontSize: 12,
+            fill: '#262626',
+          },
+        },
+        ports: {
+          ...ports,
+          items: [
+            {
+              group: 'top',
+            },
+            {
+              group: 'bottom',
+            },
+          ],
+        },
+      },
+      true,
+    )
+
+    Graph.registerNode(
+      'custom-circle',
+      {
+        inherit: 'circle',
+        width: 45,
+        height: 45,
+        attrs: {
+          body: {
+            strokeWidth: 1,
+            stroke: '#5F95FF',
+            fill: '#EFF4FF',
+          },
+          text: {
+            fontSize: 12,
+            fill: '#262626',
+          },
+        },
+        ports: { ...ports },
+      },
+      true,
+    )
+
+    Graph.registerNode(
+      'custom-image',
+      {
+        inherit: 'rect',
+        width: 52,
+        height: 52,
+        markup: [
+          {
+            tagName: 'rect',
+            selector: 'body',
+          },
+          {
+            tagName: 'image',
+          },
+          {
+            tagName: 'text',
+            selector: 'label',
+          },
+        ],
+        attrs: {
+          body: {
+            stroke: '#5F95FF',
+            fill: '#5F95FF',
+          },
+          image: {
+            width: 26,
+            height: 26,
+            refX: 13,
+            refY: 16,
+          },
+          label: {
+            refX: 3,
+            refY: 2,
+            textAnchor: 'left',
+            textVerticalAnchor: 'top',
+            fontSize: 12,
+            fill: '#fff',
+          },
+        },
+        ports: { ...ports },
+      },
+      true,
+    )
+
+  },
+  renderLeftItems: (graph: any, stencil: any) => {
+    graphEvents.rigistPoints()
+    const r1 = graph.createNode({
+      shape: 'custom-rect',
+      label: '开始',
+      attrs: {
+        body: {
+          rx: 20,
+          ry: 26,
+        },
+      },
+    })
+    const r2 = graph.createNode({
+      shape: 'custom-rect',
+      label: '过程',
+    })
+    const r3 = graph.createNode({
+      shape: 'custom-rect',
+      attrs: {
+        body: {
+          rx: 6,
+          ry: 6,
+        },
+      },
+      label: '可选过程',
+    })
+    const r4 = graph.createNode({
+      shape: 'custom-polygon',
+      attrs: {
+        body: {
+          refPoints: '0,10 10,0 20,10 10,20',
+        },
+      },
+      label: '决策',
+    })
+    const r5 = graph.createNode({
+      shape: 'custom-polygon',
+      attrs: {
+        body: {
+          refPoints: '10,0 40,0 30,20 0,20',
+        },
+      },
+      label: '数据',
+    })
+    const r6 = graph.createNode({
+      shape: 'custom-circle',
+      label: '连接',
+    })
+    stencil.load([r1, r2, r3, r4, r5, r6], 'group1')
+
+    const imageShapes = [
+      {
+        label: 'Client',
+        image:
+          'https://gw.alipayobjects.com/zos/bmw-prod/687b6cb9-4b97-42a6-96d0-34b3099133ac.svg',
+      },
+      {
+        label: 'Http',
+        image:
+          'https://gw.alipayobjects.com/zos/bmw-prod/dc1ced06-417d-466f-927b-b4a4d3265791.svg',
+      },
+      {
+        label: 'Api',
+        image:
+          'https://gw.alipayobjects.com/zos/bmw-prod/c55d7ae1-8d20-4585-bd8f-ca23653a4489.svg',
+      },
+      {
+        label: 'Sql',
+        image:
+          'https://gw.alipayobjects.com/zos/bmw-prod/6eb71764-18ed-4149-b868-53ad1542c405.svg',
+      },
+      {
+        label: 'Clound',
+        image:
+          'https://gw.alipayobjects.com/zos/bmw-prod/c36fe7cb-dc24-4854-aeb5-88d8dc36d52e.svg',
+      },
+      {
+        label: 'Mq',
+        image:
+          'https://gw.alipayobjects.com/zos/bmw-prod/2010ac9f-40e7-49d4-8c4a-4fcf2f83033b.svg',
+      },
+    ]
+    const imageNodes = imageShapes.map((item) =>
+      graph.createNode({
+        shape: 'custom-image',
+        label: item.label,
+        attrs: {
+          image: {
+            'xlink:href': item.image,
+          },
+        },
+      }),
+    )
+    stencil.load(imageNodes, 'group2')
+    // #endregion
+  },
+  registConnectLine: (graph: any) => {
+    // 控制连接桩显示/隐藏
+    const showPorts = (ports: NodeListOf<SVGElement>, show: boolean) => {
+      for (let i = 0, len = ports.length; i < len; i = i + 1) {
+        ports[i].style.visibility = show ? 'visible' : 'hidden'
+      }
+    }
+    graph.on('node:mouseenter', () => {
+      const container = refList.containerRef.value!
+      const ports: any = container.querySelectorAll(
+        '.x6-port-body',
+      )
+      showPorts(ports, true)
+    })
+    graph.on('node:mouseleave', () => {
+      const container = refList.containerRef.value!
+      const ports: any = container.querySelectorAll(
+        '.x6-port-body',
+      )
+      showPorts(ports, false)
+    })
+  }
+}
+
+onMounted(() => {
+  // 初始化画布
+  const options = {
+    container: refList.containerRef.value,
+    grid: true,
+    mousewheel: {
+      enabled: true,
+      zoomAtMousePosition: true,
+      modifiers: 'ctrl',
+      minScale: 0.5,
+      maxScale: 3,
+    },
+    connecting: {
+      router: {
+        name: 'manhattan',
+        args: {
+          padding: 1,
+        },
+      },
+      connector: {
+        name: 'rounded',
+        args: {
+          radius: 8,
+        },
+      },
+      anchor: 'center',
+      connectionPoint: 'anchor',
+      allowBlank: false,
+      snap: {
+        radius: 20,
+      },
+      createEdge() {
+        return new Shape.Edge({
+          attrs: {
+            line: {
+              stroke: '#A2B1C3',
+              strokeWidth: 2,
+              targetMarker: {
+                name: 'block',
+                width: 12,
+                height: 8,
+              },
+            },
+          },
+          zIndex: 0,
+        })
+      },
+      validateConnection({ targetMagnet }) {
+        return !!targetMagnet
+      },
+    },
+    highlighting: {
+      magnetAdsorbed: {
+        name: 'stroke',
+        args: {
+          attrs: {
+            fill: '#5F95FF',
+            stroke: '#5F95FF',
+          },
+        },
+      },
+    },
+    resizing: true,
+    rotating: true,
+    selecting: {
+      enabled: true,
+      rubberband: true,
+      showNodeSelectionBox: true,
+    },
+    snapline: true,
+    keyboard: true,
+    clipboard: true,
+  }
+  antsEvents.GraphProto = antsEvents.createGraph(options)
+  // 初始化左侧
+  antsEvents.StencilProto = antsEvents.createStencil({
+    title: '流程图',
+    target: antsEvents.GraphProto,
+    stencilGraphWidth: 250,
+    stencilGraphHeight: 180,
+    collapsable: true,
+    groups: [
+      {
+        title: '基础流程图',
+        name: 'group1',
+      },
+      {
+        title: '系统设计图',
+        name: 'group2',
+        graphHeight: 250,
+        layoutOptions: {
+          rowHeight: 70,
+        },
+      },
+    ],
+    layoutOptions: {
+      columns: 2,
+      columnWidth: 80,
+      rowHeight: 55,
+    },
+  })
+  antsEvents.StencilProto.container.width = "100%"
+  antsEvents.StencilProto.container.height = "100%"
+  refList.swaperRef.value.append(antsEvents.StencilProto.container)
+  graphEvents.renderLeftItems(antsEvents.GraphProto, antsEvents.StencilProto)
+  graphEvents.registConnectLine(antsEvents.GraphProto)
 })
-console.log(import.meta.env)
 </script>
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
+<style lang="scss" scoped>
+#container {
+  display: flex;
+  border: 1px solid #dfe3e8;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+#stencil {
+  width: 180px;
+  height: 100%;
+  position: relative;
+  border-right: 1px solid #dfe3e8;
 }
 
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+#graph-container {
+  width: calc(100% - 180px);
+  height: 100%;
+}
+
+.x6-widget-stencil {
+  background-color: #fff;
+}
+
+.x6-widget-stencil-title {
+  background-color: #fff;
+}
+
+.x6-widget-stencil-group-title {
+  background-color: #fff !important;
+}
+
+.x6-widget-transform {
+  margin: -1px 0 0 -1px;
+  padding: 0px;
+  border: 1px solid #239edd;
+}
+
+.x6-widget-transform>div {
+  border: 1px solid #239edd;
+}
+
+.x6-widget-transform>div:hover {
+  background-color: #3dafe4;
+}
+
+.x6-widget-transform-active-handle {
+  background-color: #3dafe4;
+}
+
+.x6-widget-transform-resize {
+  border-radius: 0;
+}
+
+.x6-widget-selection-inner {
+  border: 1px solid #239edd;
+}
+
+.x6-widget-selection-box {
+  opacity: 0;
+}
+
+.antv-x6-test {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+
+  .swaper {
+    width: 250px;
+    height: 100%;
+    background-color: #eee;
+    position: relative;
+  }
+
+  .container {
+    flex: 1;
+    height: 100%;
+    background-color: #ccc;
+  }
 }
 </style>

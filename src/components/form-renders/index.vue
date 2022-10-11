@@ -106,8 +106,8 @@ const selfEvents = { // 自身方法
       formEvents.renderListEvents[infos.prop][infos.eventName](...infos.args.args || {})
     }
     // 全抛出模式，如果存在 [(eventName)-full] 类型的方法进行全抛出 { eventName, prop, args: { beforeUpdateValue, afterUpdateValue, args } }
-    if (formEvents.renderListEvents[infos.prop][infos.eventName+'-getFull'] && typeof formEvents.renderListEvents[infos.prop][infos.eventName] === 'function') {
-      formEvents.renderListEvents[infos.prop][infos.eventName](infos)
+    if (formEvents.renderListEvents[infos.prop][infos.eventName+'-getFull'] && typeof formEvents.renderListEvents[infos.prop][infos.eventName+'-getFull'] === 'function') {
+      formEvents.renderListEvents[infos.prop][infos.eventName+'-getFull'](infos)
     }
     
 
