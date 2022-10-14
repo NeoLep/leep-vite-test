@@ -11,6 +11,8 @@ import { Graph, Shape, Addon } from '@antv/x6';
 
 
 const showInfos = () => {
+  console.log(antsEvents.GraphProto)
+  return
   // 获取数据
   // console.log(antsEvents.GraphProto.toJSON())
   // 插入数据
@@ -29,7 +31,7 @@ const antsEvents = <{
   createGraph: Function,
   createStencil: Function
 }>{
-    GraphProto: null,
+    GraphProto: reactive({}),
     StencilProto: null,
     createGraph(options: any) {
       return new Graph(options);
@@ -40,10 +42,168 @@ const antsEvents = <{
   }
 
 const graphEvents = {
-  rigistPoints: () => {
-    const ports = {
-      groups: {
-        top: {
+  nodes: {
+    r1: {
+      nodeId: 'r1',
+      shape: 'custom-rect',
+      label: '开始',
+      attrs: {
+        onlyOne: true,
+        body: {
+          rx: 20,
+          ry: 26,
+        },
+      },
+      ports: {
+        "groups": {
+        "left": {
+            "position": "left",
+            "attrs": {
+                "portBody": {
+                    "magnet": "passive",
+                    "r": 6,
+                    "stroke": "#5F95FF",
+                    "fill": "#fff",
+                    "strokeWidth": 1
+                },
+                "circle": {
+                    "r": 4,
+                    "magnet": "passive",
+                    "stroke": "#5F95FF",
+                    "strokeWidth": 1,
+                    "fill": "#fff",
+                    "style": {
+                        "visibility": "hidden"
+                    }
+                }
+            }
+        },
+        "right": {
+            "position": "right",
+            "attrs": {
+                "circle": {
+                    "r": 4,
+                    "magnet": true,
+                    "stroke": "#5F95FF",
+                    "strokeWidth": 1,
+                    "fill": "#fff",
+                    "style": {
+                        "visibility": "hidden"
+                    }
+                }
+            }
+        }
+        },
+        "items": [
+        {
+            "id": "in",
+            "group": "left"
+        },
+          {
+            "id": "out",
+            "group": "right"
+        }
+        ]
+      }
+    },
+    r2: {
+      nodeId: 'r2',
+      shape: 'custom-rect',
+      label: '过程',
+      ports: {
+        "groups": {
+        "left": {
+            "position": "left",
+            "attrs": {
+                "portBody": {
+                    "magnet": "passive",
+                    "r": 6,
+                    "stroke": "#5F95FF",
+                    "fill": "#fff",
+                    "strokeWidth": 1
+                },
+                "circle": {
+                    "r": 4,
+                    "magnet": "passive",
+                    "stroke": "#5F95FF",
+                    "strokeWidth": 1,
+                    "fill": "#fff",
+                    "style": {
+                        "visibility": "hidden"
+                    }
+                }
+            }
+        },
+        "right": {
+            "position": "right",
+            "attrs": {
+                "circle": {
+                    "r": 4,
+                    "magnet": true,
+                    "stroke": "#5F95FF",
+                    "strokeWidth": 1,
+                    "fill": "#fff",
+                    "style": {
+                        "visibility": "hidden"
+                    }
+                }
+            }
+        }
+        },
+        "items": [
+          {
+            "id": "in",
+            "group": "left"
+        },
+          {
+            "id": "out",
+            "group": "right"
+        }
+        ]
+      }
+    },
+    r3: {
+      nodeId: 'r3',
+      shape: 'custom-rect',
+      attrs: {
+        body: {
+          rx: 6,
+          ry: 6,
+        },
+      },
+      label: '可选过程',
+    },
+    r4: {
+      nodeId: 'r4',
+      shape: 'custom-polygon',
+      attrs: {
+        body: {
+          refPoints: '0,10 10,0 20,10 10,20',
+        },
+      },
+      label: '决策',
+    },
+    r5: {
+      nodeId: 'r5',
+      shape: 'custom-polygon',
+      attrs: {
+        body: {
+          refPoints: '10,0 40,0 30,20 0,20',
+        },
+      },
+      label: '数据',
+    },
+    r6: {
+      nodeId: 'r6',
+      shape: 'custom-circle',
+      label: '连接',
+    }
+
+
+  },
+  returnPorts: (positions: any) => {
+    const groups: any = {
+      top: {
           position: 'top',
           attrs: {
             circle: {
@@ -91,9 +251,16 @@ const graphEvents = {
         left: {
           position: 'left',
           attrs: {
+            portBody: {
+              magnet: 'passive',
+              r: 6,
+              stroke: '#5F95FF',
+              fill: '#fff',
+              strokeWidth: 1,
+            },
             circle: {
               r: 4,
-              magnet: true,
+              magnet: 'passive',
               stroke: '#5F95FF',
               strokeWidth: 1,
               fill: '#fff',
@@ -103,22 +270,28 @@ const graphEvents = {
             },
           },
         },
-      },
-      items: [
-        {
-          group: 'top',
-        },
-        {
-          group: 'right',
-        },
-        {
-          group: 'bottom',
-        },
-        {
-          group: 'left',
-        },
-      ],
     }
+    const ports = <{
+      groups: any,
+      items: any
+    }> {
+      groups: {},
+      items: [],
+    }
+    positions.forEach((item: any) => {
+      const existStatus = groups[item] ? true : false
+      if (existStatus && !ports.groups[item]) {
+        ports.groups[item] = { ...groups[item] }
+        ports.items.push({
+          group: item,
+        })
+      }
+    })
+    // console.log(ports)
+    return {...ports}
+  },
+  rigistPoints: () => {
+    
     Graph.registerNode(
       'custom-rect',
       {
@@ -136,7 +309,7 @@ const graphEvents = {
             fill: '#262626',
           },
         },
-        ports: { ...ports },
+        ports: graphEvents.returnPorts(['left', 'right']),
       },
       true,
     )
@@ -158,17 +331,7 @@ const graphEvents = {
             fill: '#262626',
           },
         },
-        ports: {
-          ...ports,
-          items: [
-            {
-              group: 'top',
-            },
-            {
-              group: 'bottom',
-            },
-          ],
-        },
+        ports: graphEvents.returnPorts(['right', 'left']),
       },
       true,
     )
@@ -190,7 +353,7 @@ const graphEvents = {
             fill: '#262626',
           },
         },
-        ports: { ...ports },
+        ports: graphEvents.returnPorts(['right']),
       },
       true,
     )
@@ -234,8 +397,8 @@ const graphEvents = {
             fill: '#fff',
           },
         },
-        ports: { ...ports },
-      },
+        ports: graphEvents.returnPorts(['right']),
+       },
       true,
     )
 
@@ -243,19 +406,23 @@ const graphEvents = {
   renderLeftItems: (graph: any, stencil: any) => {
     graphEvents.rigistPoints()
     const r1 = graph.createNode({
+      nodeId: 'start',
       shape: 'custom-rect',
       label: '开始',
       attrs: {
+        onlyOne: true,
         body: {
           rx: 20,
           ry: 26,
         },
       },
     })
+
     const r2 = graph.createNode({
       shape: 'custom-rect',
       label: '过程',
     })
+
     const r3 = graph.createNode({
       shape: 'custom-rect',
       attrs: {
@@ -266,6 +433,7 @@ const graphEvents = {
       },
       label: '可选过程',
     })
+
     const r4 = graph.createNode({
       shape: 'custom-polygon',
       attrs: {
@@ -275,6 +443,7 @@ const graphEvents = {
       },
       label: '决策',
     })
+
     const r5 = graph.createNode({
       shape: 'custom-polygon',
       attrs: {
@@ -284,10 +453,12 @@ const graphEvents = {
       },
       label: '数据',
     })
+    
     const r6 = graph.createNode({
       shape: 'custom-circle',
       label: '连接',
     })
+    
     stencil.load([r1, r2, r3, r4, r5, r6], 'group1')
 
     const imageShapes = [
@@ -357,6 +528,37 @@ const graphEvents = {
       )
       showPorts(ports, false)
     })
+  },
+  listenPorts: (graph: any) => {
+    graph.on("edge:connected", ({ e, isNew, edge, previousCell, currentCell }) => {
+     const source = edge.getSourceCell();
+     // 删除之后也会调用这个方法，source为空
+     if (!source) {
+       return;
+     }
+     let json = graph.toJSON();
+      console.log("连接边的操作", json, json.cells);
+      console.log("----")
+      console.log(edge)
+     
+    //  // 判断是否连接的目标节点的输入点
+    //  if (edge.shape === "dag-edge") {
+    //    const edgeSource = edge.source.port
+    //    const edgeTarget = edge.target.port
+    //    const edgeInput = allTrim(edgeSource.split('_')[3]) // 从字符串中把类型取出来
+    //    const edgeOutput = allTrim(edgeTarget.split('_')[3])
+    //    if (
+    //      // 判断是否是输出节点和输入节点相连
+    //      edgeSource.indexOf("output") === -1 ||
+    //      edgeTarget.indexOf("input") === -1
+    //      || edgeInput !== edgeOutput // 或者input和output类型不相同
+    //    ) {
+    //      graph.removeEdge(edge.id); // 取消连接边的操作
+    //    }
+    //  }
+    //  graph.set(json);
+   }
+ );
   }
 }
 
@@ -365,6 +567,7 @@ onMounted(() => {
   const options = {
     container: refList.containerRef.value,
     grid: true,
+    allowLoop: false,
     mousewheel: {
       enabled: true,
       zoomAtMousePosition: true,
@@ -407,8 +610,13 @@ onMounted(() => {
           zIndex: 0,
         })
       },
-      validateConnection({ targetMagnet }) {
-        return !!targetMagnet
+      validateConnection({ targetMagnet, targetView }) {
+        const node: any = targetView.cell
+        if (targetMagnet.getAttribute('port-group') === 'right') {
+          return false
+        } else {
+          return true
+        }
       },
     },
     highlighting: {
@@ -433,7 +641,7 @@ onMounted(() => {
     keyboard: true,
     clipboard: true,
   }
-  antsEvents.GraphProto = antsEvents.createGraph(options)
+  antsEvents.GraphProto = reactive(antsEvents.createGraph(options))
   // 初始化左侧
   antsEvents.StencilProto = antsEvents.createStencil({
     title: '流程图',
@@ -455,6 +663,10 @@ onMounted(() => {
         },
       },
     ],
+    validateNode: (node: any, options: any) => {
+      console.log(node.attrs)
+      // console.log(options)
+    },
     layoutOptions: {
       columns: 2,
       columnWidth: 80,
@@ -466,6 +678,18 @@ onMounted(() => {
   refList.swaperRef.value.append(antsEvents.StencilProto.container)
   graphEvents.renderLeftItems(antsEvents.GraphProto, antsEvents.StencilProto)
   graphEvents.registConnectLine(antsEvents.GraphProto)
+  graphEvents.listenPorts(antsEvents.GraphProto)
+
+  antsEvents.GraphProto.on('cell:selected', ({cell}: any, e: any) => {
+    // cell.cell.setAttrs('text', {text: "nonoon"}) 
+    console.log(cell.getAttrs())
+    cell.setAttrs({
+      text: {
+        text: "nononno"
+      }
+    })
+  })
+
 })
 </script>
 <style lang="scss" scoped>
