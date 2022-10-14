@@ -5,7 +5,7 @@
       <el-row :gutter="formEvents.layout.gutter || 20" class="row">
         <el-col v-for="item in formEvents.renderList || []" :span="item.span || formEvents.layout.span || 6"
           class="col">
-          <el-form-item v-bind="item.formItemsProps || {}" :label="item.label" :prop="item.prop"
+          <el-form-item v-if="item.hide || false" v-bind="item.formItemsProps || {}" :label="item.label" :prop="item.prop"
             :rules="item.rules || []" class="form-item">
             <template #label>
               <slot :name="loaderEvents.labelSlotsList[item.prop]" :data="item"></slot>
