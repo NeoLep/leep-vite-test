@@ -15,7 +15,7 @@
           class="col"
         >
           <el-form-item
-            v-if="!item.hide || true"
+            v-if="'hide' in item ? !item.hide : true"
             v-bind="item.formItemsProps || {}"
             :label="item.label"
             :prop="item.prop"
@@ -43,7 +43,10 @@
               </template>
             </form-elements-content>
             <div v-else style="width: 100%">
-              <slot :name="item.slots.default || item.slots"></slot>
+              <slot
+                :name="item.slots.default || item.slots"
+                :renders="item"
+              ></slot>
             </div>
           </el-form-item>
         </el-col>
