@@ -1,56 +1,36 @@
 <template>
   <div class="form-renders">
-    <el-form
-      v-bind="formEvents.props"
-      :ref="(el: any) => (formEvents.formsRef = el)"
-      class="form-container"
-      :model="formEvents.forms"
-      :label-width="formEvents.props.labelWidth || '80px'"
-      @validate="(...args:any) => emit('validate', ...args)"
-      :class="{ zeroPadding: formEvents.props?.zeroPadding }"
-    >
+    <el-form v-bind="formEvents.props" :ref="(el: any) => (formEvents.formsRef = el)" class="form-container"
+      :model="formEvents.forms" :label-width="formEvents.props.labelWidth || '80px'"
+      @validate="(...args:any) => emit('validate', ...args)" :class="{ zeroPadding: formEvents.props?.zeroPadding }">
       <el-row :gutter="formEvents.layout.gutter || 20" class="row">
-        <el-col
-          v-for="item in formEvents.renderList || []"
-          :span="item.span || formEvents.layout.span || 6"
-          class="col"
-        >
-          <el-form-item
-            v-if="'hide' in item ? !item.hide : true"
-            v-bind="item.formItemsProps || {}"
-            :label="item.label"
-            :prop="item.prop"
-            :rules="item.rules || []"
-            class="form-item"
-            :class="{ justTitle: item.formItemsProps?.justTitle , zeroPadding: item.formItemsProps?.zeroPadding}"
-          >
-            <template #label>
-              <slot
-                :name="loaderEvents.labelSlotsList[item.prop]"
-                :data="item"
-              ></slot>
-            </template>
-            <form-elements-content
-              v-if="item.type !== 'custom'"
-              v-model="formEvents.forms[item.prop]"
-              :renders="item"
-              :slots-list="loaderEvents.slotsList[item.prop]"
-              @eventsSubs="selfEvents.getEventsSubs"
-            >
-              <template
-                v-for="slotItem in loaderEvents.slotsList[item.prop]"
-                #[slotItem]="scoped"
-              >
-                <slot :name="slotItem" :pop="{ ...scoped.pop }"></slot>
+        <el-col v-for="(item, index) in (formEvents.renderList || [])" :span="item.span || formEvents.layout.span || 6"
+          class="col">
+          <div v-if="'hide' in item ? !item.hide : true">
+            <!-- 行级别自定义插槽 -->
+            <div v-if="item.type === 'custom-line'">
+              <template v-for="slotItem in loaderEvents.slotsList[item.prop]">
+                <slot :name="slotItem"></slot>
               </template>
-            </form-elements-content>
-            <div v-else style="width: 100%">
-              <slot
-                :name="item.slots.default || item.slots"
-                :renders="item"
-              ></slot>
             </div>
-          </el-form-item>
+            <!-- form-item 内容 -->
+            <el-form-item v-else v-bind="item.formItemsProps || {}" :label="item.label"
+              :prop="item.prop || 'nonProp_' + index" :rules="item.rules || []" class="form-item"
+              :class="{ justTitle: item.formItemsProps?.justTitle , zeroPadding: item.formItemsProps?.zeroPadding}">
+              <template #label>
+                <slot :name="loaderEvents.labelSlotsList[item.prop]" :data="item"></slot>
+              </template>
+              <form-elements-content v-if="item.type !== 'custom'" v-model="formEvents.forms[item.prop]" :renders="item"
+                :slots-list="loaderEvents.slotsList[item.prop]" @eventsSubs="selfEvents.getEventsSubs">
+                <template v-for="slotItem in loaderEvents.slotsList[item.prop]" #[slotItem]="scoped">
+                  <slot :name="slotItem" :pop="{ ...scoped.pop }"></slot>
+                </template>
+              </form-elements-content>
+              <div v-else style="width: 100%">
+                <slot :name="item.slots.default || item.slots" :renders="item"></slot>
+              </div>
+            </el-form-item>
+          </div>
         </el-col>
       </el-row>
       <el-form-item>
@@ -152,7 +132,7 @@ const selfEvents = {
     if (
       formEvents.renderListEvents[infos.prop][infos.eventName] &&
       typeof formEvents.renderListEvents[infos.prop][infos.eventName] ===
-        'function'
+      'function'
     ) {
       // 默认抛出，只抛出element组件原生自带的参数
       formEvents.renderListEvents[infos.prop][infos.eventName](
@@ -163,7 +143,7 @@ const selfEvents = {
     if (
       formEvents.renderListEvents[infos.prop][`${infos.eventName}-getFull`] &&
       typeof formEvents.renderListEvents[infos.prop][
-        `${infos.eventName}-getFull`
+      `${infos.eventName}-getFull`
       ] === 'function'
     ) {
       formEvents.renderListEvents[infos.prop][`${infos.eventName}-getFull`](
@@ -229,15 +209,19 @@ defineExpose({
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
+
   .form-container {
     flex: 1;
   }
+
   .form-item {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
   }
+
   .justTitle {
     margin-bottom: 0 !important;
   }
+
   .zeroPadding {
     :deep(.el-form-item__label) {
       padding: 0;
