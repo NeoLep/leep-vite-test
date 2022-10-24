@@ -7,6 +7,7 @@
       :model="formEvents.forms"
       :label-width="formEvents.props.labelWidth || '80px'"
       @validate="(...args:any) => emit('validate', ...args)"
+      :class="{ zeroPadding: formEvents.props?.zeroPadding }"
     >
       <el-row :gutter="formEvents.layout.gutter || 20" class="row">
         <el-col
@@ -21,6 +22,7 @@
             :prop="item.prop"
             :rules="item.rules || []"
             class="form-item"
+            :class="{ justTitle: item.formItemsProps?.justTitle , zeroPadding: item.formItemsProps?.zeroPadding}"
           >
             <template #label>
               <slot
@@ -229,6 +231,17 @@ defineExpose({
   flex-direction: row;
   .form-container {
     flex: 1;
+  }
+  .form-item {
+    margin-bottom: 15px;
+  }
+  .justTitle {
+    margin-bottom: 0 !important;
+  }
+  .zeroPadding {
+    :deep(.el-form-item__label) {
+      padding: 0;
+    }
   }
 }
 </style>
