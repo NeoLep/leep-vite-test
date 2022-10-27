@@ -3,7 +3,7 @@
     ref="inputRef"
     class="form-items-achieve" 
     v-bind="$attrs" 
-    v-model="controlEvents.getValue.value" 
+    v-model="controlEvents.getValue.value"
     :placeholder="$attrs.placeholder || '请输入'"
     >
     <template v-for="(slotsItem, index) in props.slotsListTransform.slotPropsList" #[slotsItem]>

@@ -1,17 +1,25 @@
 <template>
   <div class="forms-element-content">
-    <div v-if="!componentLists['form-' + props.renders?.type]">
+    <component v-if="props.renders?.type.constructor === Object && props.renders?.type.type === 'element-plus' && props.renders?.type.name"
+      :is="props.renders?.type.name" v-bind="props.renders?.props || {}" ref="elementRef" v-model="getModelValue"
+      :renders="renders" :slots-list-orign="slotsList" :slots-list-transform="slotsEvents.slotsTransform(slotsList)"
+      @update:modelValue="(val: any) => emit('update:modelValue', val)"
+      @input="(...args: any) => subEvents.getEvents('input', elementRef, args)"
+      @change="(...args: any) => subEvents.getEvents('change', elementRef, args)"
+      @blur="(...args: any) => subEvents.getEvents('blur', elementRef, args)"
+      @focus="(...args: any) => subEvents.getEvents('focus', elementRef, args)"
+      @clear="(...args: any) => subEvents.getEvents('clear', elementRef, args)"
+      @visible-change="(...args: any) => subEvents.getEvents('visible-change', elementRef, args)"
+      @remove-tag="(...args: any) => subEvents.getEvents('remove-tag', elementRef, args)"
+      @calendar-change="(...args: any) => subEvents.getEvents('calendar-change', elementRef, args)"
+      @panel-change="(...args: any) => subEvents.getEvents('panel-change', elementRef, args)" />
+    <div v-else>
+      <div v-if="!componentLists['form-' + props.renders?.type]">
       could not find component named
       <span style="color: red">{{ 'form-' + props.renders?.type }}</span>
     </div>
-    <component
-      :is="componentLists['form-' + props.renders?.type]"
-      v-else
-      v-bind="props.renders?.props || {}"
-      ref="elementRef"
-      v-model="getModelValue"
-      :renders="renders"
-      :slots-list-orign="slotsList"
+    <component :is="componentLists['form-' + props.renders?.type]" v-else v-bind="props.renders?.props || {}"
+      ref="elementRef" v-model="getModelValue" :renders="renders" :slots-list-orign="slotsList"
       :slots-list-transform="slotsEvents.slotsTransform(slotsList)"
       @update:modelValue="(val: any) => emit('update:modelValue', val)"
       @input="(...args: any) => subEvents.getEvents('input', elementRef, args)"
@@ -22,12 +30,12 @@
       @visible-change="(...args: any) => subEvents.getEvents('visible-change', elementRef, args)"
       @remove-tag="(...args: any) => subEvents.getEvents('remove-tag', elementRef, args)"
       @calendar-change="(...args: any) => subEvents.getEvents('calendar-change', elementRef, args)"
-      @panel-change="(...args: any) => subEvents.getEvents('panel-change', elementRef, args)"
-    >
+      @panel-change="(...args: any) => subEvents.getEvents('panel-change', elementRef, args)">
       <template v-for="slotItem in slotsList" #[slotItem]="scoped">
         <slot :name="slotItem" :pop="{ ...scoped.pop }"></slot>
       </template>
     </component>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -65,7 +73,7 @@ const subEvents = {
       eventName: types, // 发出的事件类型 input,change,focus,blur,change...
       args: {
         // 组件传递过来的参数集合
-        beforeUpdateValue: refIs.getOldValue(), // 更新前的数据
+        beforeUpdateValue: refIs.getOldValue ? refIs.getOldValue() : null, // 更新前的数据
         afterUpdateValue: props.modelValue, // 更新后的数据
         args: getArgs, // element 本身方法传递的参数
         rendersProto: props.renders, // render 实例
@@ -92,6 +100,22 @@ const slotsEvents = {
     return resultObjects
   },
 }
+
+onMounted(() => {
+  if (props.renders?.mountedTrigger) {
+    if (typeof props.renders.mountedTrigger === 'string') {
+      subEvents.getEvents(props.renders.mountedTrigger, elementRef, [
+        props.modelValue,
+      ])
+    } else if (Array.isArray(props.renders.mountedTrigger)) {
+      props.renders.mountedTrigger.forEach((item: any) => {
+        if (typeof item === 'string') {
+          subEvents.getEvents(item, elementRef, [props.modelValue])
+        }
+      })
+    }
+  }
+})
 </script>
 <style lang="scss" scoped>
 .forms-element-content {
