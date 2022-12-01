@@ -20,7 +20,11 @@
             :row="scoped.row"
           ></slot>
           <span v-else>
+            <span v-if="!scoped.row[columnItem.prop] && columnItem.prop">
+              -
+            </span>
             <table-content
+              v-else
               :data="scoped.row[columnItem.prop]"
               :row="scoped.row"
               :item="columnItem"
